@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de Control · flujoPan</title>
+<style>
+:root{
+  --bg:#f3ead6; --bg2:#e8dcc0; --ink:#2b1d0e; --gold:#8b6a1f;
+  --red:#a83232; --green:#4a7a3a; --amber:#b8862e; --blue:#3a5a7a;
+  --paper:#fffaf0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);padding:20px}
+h1{font-family:'Cormorant Garamond',serif;color:var(--red);margin-bottom:16px}
+h2{font-family:'Cormorant Garamond',serif;color:var(--gold);margin:20px 0 10px;font-size:1.3em}
+.panel{max-width:1100px;margin:0 auto}
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.btn{
+  background:var(--red);color:var(--paper);border:none;padding:10px 18px;
+  border-radius:4px;cursor:pointer;font-family:'Cormorant Garamond',serif;
+  font-weight:700;font-size:1em;letter-spacing:.5px;
+}
+.btn:hover{background:var(--gold)}
+.btn.green{background:var(--green)}
+.btn.blue{background:var(--blue)}
+.btn.amber{background:var(--amber)}
+.btn.small{padding:6px 12px;font-size:.85em}
+
+.card{background:var(--paper);border:1px solid var(--gold);border-radius:6px;padding:14px;margin-bottom:12px}
+.card h3{font-family:'Cormorant Garamond',serif;color:var(--red);margin-bottom:8px;font-size:1.1em}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:8px}
+label{display:block;font-size:.75em;color:var(--gold);font-weight:600;letter-spacing:.5px;margin-bottom:3px;text-transform:uppercase}
+input,select,textarea{
+  width:100%;padding:6px 8px;border:1px solid var(--gold);
+  background:var(--bg);font-family:'Inter',sans-serif;font-size:.9em;
+  color:var(--ink);border-radius:3px;
+}
+textarea{min-height:60px;font-family:monospace;font-size:.8em}
+.stage-row{display:grid;grid-template-columns:2fr 1fr 3fr auto;gap:6px;margin-bottom:4px;align-items:center}
+.cons-row{display:grid;grid-template-columns:100px 2fr 4fr auto;gap:6px;margin-bottom:4px;align-items:center}
+.bpm-row{display:grid;grid-template-columns:2fr 2fr 2fr 2fr auto;gap:6px;margin-bottom:4px;align-items:center}
+.remove{background:var(--red);color:#fff;border:none;border-radius:3px;width:24px;height:24px;cursor:pointer;font-weight:700}
+.add{background:var(--green);color:#fff;border:none;border-radius:3px;padding:4px 10px;cursor:pointer;font-size:.8em;margin-top:4px}
+.info{background:var(--bg2);padding:10px;border-radius:4px;font-size:.85em;margin-bottom:12px}
+.info code{background:var(--ink);color:var(--paper);padding:2px 6px;border-radius:3px;font-size:.9em}
+.warning{background:#fff5e6;border-left:4px solid var(--amber);padding:10px;border-radius:0 4px 4px 0;font-size:.85em;margin-bottom:12px}
+.recipe-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.recipe-chip{
+  background:var(--bg2);border:1px solid var(--gold);border-radius:16px;
+  padding:4px 12px;cursor:pointer;font-size:.85em;
+}
+.recipe-chip.active{background:var(--red);color:var(--paper)}
+</style>
+</head>
+<body>
+
+<div class="panel">
+
+<h1>⚙️ Panel de Control · flujoPan v3.0</h1>
+
+<div class="info">
+  <b>¿Cómo funciona?</b> Edita las recetas abajo. Cuando termines, pulsa <code>Exportar flujoPan_data.js</code> y reemplaza el archivo en tu carpeta. El visor se actualizará automáticamente.
+</div>
+
+<div class="warning">
+  <b>⚠ Importante:</b> Este panel no guarda cambios automáticamente. Usa <b>Exportar</b> para descargar el archivo actualizado. También puedes <b>Importar</b> un archivo existente para editarlo.
+</div>
+
+<div class="toolbar">
+  <button class="btn green" onclick="exportData()">💾 Exportar flujoPan_data.js</button>
+  <button class="btn blue" onclick="document.getElementById('importFile').click()">📂 Importar flujoPan_data.js</button>
+  <input type="file" id="importFile" accept=".js" style="display:none" onchange="importData(event)">
+  <button class="btn amber" onclick="addRecipe()">➕ Añadir receta</button>
+  <button class="btn" onclick="loadDefaults()">↺ Cargar datos por defecto</button>
+</div>
+
+<h2>Recetas</h2>
+<div class="recipe-list" id="recipeList"></div>
+
+<div id="editor"></div>
+
+</div>
+
+<script src="flujoPan_data.js"></script>
+<script>
+let workingData = null;
+
+function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function loadDefaults(){
+  workingData = deepClone({ CATEGORIAS, PROCESOS, REFERENCIAS });
+  renderRecipeList();
+  renderEditor();
+}
+
+function renderRecipeList(){
+  const list = document.getElementById('recipeList');
+  list.innerHTML = '';
+  Object.entries(workingData.PROCESOS).forEach(([key,p])=>{
+    const chip = document.createElement('div');
+    chip.className = 'recipe-chip' + (currentKey === key ? ' active' : '');
+    chip.textContent = `${p.icon} ${p.name}`;
+    chip.onclick = ()=>{ currentKey = key; renderRecipeList(); renderEditor(); };
+    list.appendChild(chip);
+  });
+}
+
+let currentKey = null;
+
+function renderEditor(){
+  const editor = document.getElementById('editor');
+  if(!currentKey){
+    editor.innerHTML = '<div class="info">Selecciona una receta para editar.</div>';
+    return;
+  }
+  const p = workingData.PROCESOS[currentKey];
+
+  let html = `<div class="card">
+    <h3>${p.icon} ${p.name}</h3>
+    <div class="row3">
+      <div><label>Clave (ID)</label><input value="${currentKey}" disabled></div>
+      <div><label>Nombre</label><input id="ed_name" value="${p.name}"></div>
+      <div><label>Icono</label><input id="ed_icon" value="${p.icon}"></div>
+    </div>
+    <div class="row3">
+      <div><label>Categoría</label>
+        <select id="ed_cat">
+          ${Object.entries(workingData.CATEGORIAS).map(([k,c])=>
+            `<option value="${k}" ${p.cat===k?'selected':''}>${c.nombre}</option>`
+          ).join('')}
+        </select>
+      </div>
+      <div><label>Tiempo total</label><input id="ed_time" value="${p.time}"></div>
+      <div><label>Temp. horno</label><input id="ed_tempHorno" value="${p.tempHorno || ''}"></div>
+    </div>
+    <div class="row">
+      <div><label>Hidratación</label><input id="ed_hidratacion" value="${p.hidratacion || ''}"></div>
+    </div>
+  </div>`;
+
+  // Etapas
+  html += `<div class="card">
+    <h3>Etapas (${p.stages.length})</h3>
+    <div id="stagesContainer">`;
+  p.stages.forEach((s,i)=>{
+    html += `<div class="stage-row">
+      <input value="${s.name}" onchange="updateStage(${i},'name',this.value)" placeholder="Nombre">
+      <input type="number" value="${s.dur}" onchange="updateStage(${i},'dur',parseInt(this.value))" placeholder="Min">
+      <input value="${s.desc}" onchange="updateStage(${i},'desc',this.value)" placeholder="Descripción">
+      <button class="remove" onclick="removeStage(${i})">×</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="add" onclick="addStage()">+ Añadir etapa</button>
+  </div>`;
+
+  // Consideraciones
+  html += `<div class="card">
+    <h3>Consideraciones (${p.considerations?.length || 0})</h3>
+    <div id="consContainer">`;
+  (p.considerations || []).forEach((c,i)=>{
+    html += `<div class="cons-row">
+      <select onchange="updateCons(${i},'type',this.value)">
+        <option value="" ${c.type===''?'selected':''}>Info</option>
+        <option value="ok" ${c.type==='ok'?'selected':''}>OK</option>
+        <option value="warn" ${c.type==='warn'?'selected':''}>Warn</option>
+      </select>
+      <input value="${c.title}" onchange="updateCons(${i},'title',this.value)" placeholder="Título">
+      <input value="${c.text}" onchange="updateCons(${i},'text',this.value)" placeholder="Texto">
+      <button class="remove" onclick="removeCons(${i})">×</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="add" onclick="addCons()">+ Añadir consideración</button>
+  </div>`;
+
+  // BPM
+  html += `<div class="card">
+    <h3>BPM (${p.bpm?.length || 0})</h3>
+    <div id="bpmContainer">`;
+  (p.bpm || []).forEach((b,i)=>{
+    html += `<div class="bpm-row">
+      <input value="${b.etapa}" onchange="updateBPM(${i},'etapa',this.value)" placeholder="Etapa">
+      <input value="${b.peligro}" onchange="updateBPM(${i},'peligro',this.value)" placeholder="Peligro">
+      <input value="${b.control}" onchange="updateBPM(${i},'control',this.value)" placeholder="Control">
+      <input value="${b.limite}" onchange="updateBPM(${i},'limite',this.value)" placeholder="Límite">
+      <button class="remove" onclick="removeBPM(${i})">×</button>
+    </div>`;
+  });
+  html += `</div>
+    <button class="add" onclick="addBPM()">+ Añadir fila BPM</button>
+  </div>`;
+
+  html += `<button class="btn" onclick="deleteRecipe()">🗑 Eliminar receta</button>`;
+
+  editor.innerHTML = html;
+}
+
+function saveBasicFields(){
+  const p = workingData.PROCESOS[currentKey];
+  p.name = document.getElementById('ed_name').value;
+  p.icon = document.getElementById('ed_icon').value;
+  p.cat = document.getElementById('ed_cat').value;
+  p.time = document.getElementById('ed_time').value;
+  p.tempHorno = document.getElementById('ed_tempHorno').value;
+  p.hidratacion = document.getElementById('ed_hidratacion').value;
+}
+
+// Guardar al cambiar campos básicos
+document.addEventListener('change', e=>{
+  if(['ed_name','ed_icon','ed_cat','ed_time','ed_tempHorno','ed_hidratacion'].includes(e.target.id)){
+    saveBasicFields();
+    renderRecipeList();
+  }
+});
+
+function updateStage(i, field, val){
+  workingData.PROCESOS[currentKey].stages[i][field] = val;
+}
+function removeStage(i){
+  workingData.PROCESOS[currentKey].stages.splice(i,1);
+  renderEditor();
+}
+function addStage(){
+  workingData.PROCESOS[currentKey].stages.push({name:'Nueva etapa', dur:10, desc:''});
+  renderEditor();
+}
+
+function updateCons(i, field, val){
+  workingData.PROCESOS[currentKey].considerations[i][field] = val;
+}
+function removeCons(i){
+  workingData.PROCESOS[currentKey].considerations.splice(i,1);
+  renderEditor();
+}
+function addCons(){
+  if(!workingData.PROCESOS[currentKey].considerations)
+    workingData.PROCESOS[currentKey].considerations = [];
+  workingData.PROCESOS[currentKey].considerations.push({type:'', title:'', text:''});
+  renderEditor();
+}
+
+function updateBPM(i, field, val){
+  workingData.PROCESOS[currentKey].bpm[i][field] = val;
+}
+function removeBPM(i){
+  workingData.PROCESOS[currentKey].bpm.splice(i,1);
+  renderEditor();
+}
+function addBPM(){
+  if(!workingData.PROCESOS[currentKey].bpm)
+    workingData.PROCESOS[currentKey].bpm = [];
+  workingData.PROCESOS[currentKey].bpm.push({etapa:'', peligro:'', control:'', limite:''});
+  renderEditor();
+}
+
+function addRecipe(){
+  const key = prompt('Clave única (sin espacios, ej: pan_centeno):');
+  if(!key || workingData.PROCESOS[key]){alert('Clave inválida o existente');return;}
+  workingData.PROCESOS[key] = {
+    cat: 'clasicos',
+    name: 'Nueva receta',
+    icon: '🍞',
+    time: '2-3 h',
+    tempHorno: '200°C',
+    hidratacion: '60%',
+    stages: [{name:'Mezclado', dur:15, desc:''}],
+    considerations: [],
+    bpm: []
+  };
+  currentKey = key;
+  renderRecipeList();
+  renderEditor();
+}
+
+function deleteRecipe(){
+  if(!confirm('¿Eliminar esta receta?')) return;
+  delete workingData.PROCESOS[currentKey];
+  currentKey = Object.keys(workingData.PROCESOS)[0] || null;
+  renderRecipeList();
+  renderEditor();
+}
+
+function exportData(){
+  saveBasicFields();
+  const content = `/* ============================================================
+   flujoPan_data.js — Base de datos de procesos panaderos
+   Versión 3.0 · Generado por Panel de Control
+   Fecha: ${new Date().toLocaleString('es-AR')}
+   ============================================================ */
+
+const CATEGORIAS = ${JSON.stringify(workingData.CATEGORIAS, null, 2)};
+
+const PROCESOS = ${JSON.stringify(workingData.PROCESOS, null, 2)};
+
+const REFERENCIAS = ${JSON.stringify(workingData.REFERENCIAS, null, 2)};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CATEGORIAS, PROCESOS, REFERENCIAS };
+}
+`;
+  const blob = new Blob([content], {type:'application/javascript'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'flujoPan_data.js';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      // Extraer las constantes del archivo JS
+      const text = e.target.result;
+      const fn = new Function(text + '; return { CATEGORIAS, PROCESOS, REFERENCIAS };');
+      workingData = fn();
+      currentKey = Object.keys(workingData.PROCESOS)[0] || null;
+      renderRecipeList();
+      renderEditor();
+      alert('Datos importados correctamente');
+    }catch(err){
+      alert('Error al importar: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* INIT */
+loadDefaults();
+</script>
+
+</body>
+</html>

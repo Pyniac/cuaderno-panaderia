@@ -1,0 +1,12 @@
+cuaderno-panaderia/
+├── index.html              ← la app
+├── manifest.json           ← metadatos para PWA
+├── sw.js                   ← service worker
+├── data/
+│   ├── recetas.json
+│   ├── categorias.json
+│   ├── referencias.json
+│   └── app_config.json
+└── assets/
+    ├── icon-192.png
+    └── icon-512.png

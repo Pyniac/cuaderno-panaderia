@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual Operativo del Panadero · Plan de Producción v3.0</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.16/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.16/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/600.css">
+<style>
+:root{
+  --bg:#f3ead6; --bg2:#e8dcc0; --ink:#2b1d0e; --gold:#8b6a1f;
+  --red:#a83232; --green:#4a7a3a; --amber:#b8862e; --blue:#3a5a7a;
+  --paper:#fffaf0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#2b1d0e;color:var(--ink);line-height:1.5}
+.doc{max-width:1200px;margin:0 auto;background:var(--bg);padding:40px 50px}
+
+header.doc-header{text-align:center;border-bottom:3px double var(--gold);padding-bottom:20px;margin-bottom:30px}
+header.doc-header h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:2.4em;color:var(--red);letter-spacing:2px}
+header.doc-header .sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:1.1em;margin-top:6px}
+header.doc-header .meta{font-size:.8em;color:var(--ink);opacity:.7;margin-top:10px;letter-spacing:1px}
+
+/* ============ FILTROS Y GRID ============ */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0;justify-content:center}
+.filter-btn{
+  background:var(--paper);border:2px solid var(--bg2);border-radius:20px;
+  padding:6px 16px;cursor:pointer;font-size:.85em;
+  font-family:'Cormorant Garamond',serif;font-weight:700;
+  color:var(--ink);transition:all .2s;
+}
+.filter-btn:hover{border-color:var(--gold)}
+.filter-btn.active{background:var(--red);color:var(--paper);border-color:var(--red)}
+
+.breads-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.bread-card{
+  background:var(--paper);border:2px solid var(--bg2);border-radius:6px;
+  padding:12px;cursor:pointer;transition:all .2s;text-align:center;position:relative;
+}
+.bread-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.bread-card.selected{border-color:var(--red);background:#fff5e6;box-shadow:0 4px 12px rgba(168,50,50,.2)}
+.bread-card .check{
+  position:absolute;top:6px;right:6px;width:20px;height:20px;
+  border-radius:50%;background:var(--green);color:#fff;
+  font-size:.7em;line-height:20px;text-align:center;display:none;
+}
+.bread-card.selected .check{display:block}
+.bread-card .icon{font-size:1.8em;margin-bottom:4px}
+.bread-card .name{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:.95em;color:var(--ink)}
+.bread-card .cat{font-size:.65em;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.bread-card .time{font-size:.7em;color:var(--gold);font-style:italic;margin-top:2px}
+
+/* ============ CALENDARIO ============ */
+.calendar-tool{background:var(--paper);border:2px solid var(--gold);border-radius:8px;padding:20px;margin:16px 0}
+.cal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.cal-field label{display:block;font-size:.75em;color:var(--gold);font-weight:600;letter-spacing:1px;margin-bottom:4px;text-transform:uppercase}
+.cal-field select,.cal-field input{width:100%;padding:8px 10px;border:1px solid var(--gold);background:var(--bg);font-family:'Inter',sans-serif;font-size:.95em;color:var(--ink);border-radius:4px}
+
+.cal-actions{display:flex;gap:10px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+.cal-btn{
+  background:var(--red);color:var(--paper);border:none;padding:10px 22px;
+  border-radius:4px;cursor:pointer;font-family:'Cormorant Garamond',serif;
+  font-size:1.05em;font-weight:700;letter-spacing:1px;transition:all .2s;
+}
+.cal-btn:hover{background:var(--gold)}
+.cal-btn.secondary{background:var(--gold)}
+.cal-btn.secondary:hover{background:var(--red)}
+.cal-btn.print{background:var(--green)}
+.cal-btn.print:hover{background:var(--ink)}
+
+.timeline{margin-top:18px;border-left:3px solid var(--gold);padding-left:18px}
+.tl-item{position:relative;padding:10px 0 10px 18px;border-bottom:1px dashed var(--bg2)}
+.tl-item:last-child{border-bottom:none}
+.tl-item::before{content:'';position:absolute;left:-25px;top:14px;width:14px;height:14px;border-radius:50%;background:var(--red);border:3px solid var(--bg)}
+.tl-item.done::before{background:var(--green)}
+.tl-item.next::before{background:var(--amber);box-shadow:0 0 0 4px rgba(184,134,46,.3)}
+.tl-time{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.15em;color:var(--red)}
+.tl-stage{font-family:'Cormorant Garamond',serif;font-size:1em;font-weight:700;color:var(--ink);margin-top:2px}
+.tl-desc{font-size:.82em;color:var(--ink);opacity:.85;margin-top:3px}
+.tl-dur{display:inline-block;background:var(--gold);color:var(--paper);padding:1px 8px;border-radius:10px;font-size:.72em;font-weight:600;margin-left:6px}
+
+/* ============ SECCIONES ============ */
+h2.section{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.8em;color:var(--red);border-bottom:2px solid var(--gold);padding-bottom:6px;margin:30px 0 16px;letter-spacing:1px}
+h2.section .num{display:inline-block;background:var(--red);color:var(--paper);width:34px;height:34px;border-radius:50%;text-align:center;line-height:34px;font-size:.85em;margin-right:10px;vertical-align:middle}
+h3.sub{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:1.3em;color:var(--gold);margin:18px 0 10px}
+p{font-size:.9em;margin-bottom:8px;text-align:justify}
+ul,ol{font-size:.88em;margin:6px 0 12px 22px}
+li{margin-bottom:4px}
+
+/* ============ FLUJO ============ */
+.flow-diagram{background:var(--paper);border:1px solid var(--gold);border-radius:6px;padding:16px;margin:14px 0;overflow-x:auto}
+.flow-svg{display:block;margin:0 auto;width:100%;height:auto}
+.flow-svg text{font-family:'Inter',sans-serif}
+.flow-svg .stage-label{font-family:'Cormorant Garamond',serif;font-weight:700}
+
+/* ============ TABLAS ============ */
+table.ref{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:.85em;background:var(--paper)}
+table.ref th{background:var(--red);color:var(--paper);font-family:'Cormorant Garamond',serif;font-weight:700;padding:7px 10px;text-align:left;letter-spacing:.5px;border:1px solid var(--gold)}
+table.ref td{padding:6px 10px;border:1px solid var(--bg2);vertical-align:top}
+table.ref tr:nth-child(even) td{background:var(--bg)}
+
+/* ============ CONSIDERACIONES ============ */
+.consideration{background:var(--paper);border-left:4px solid var(--amber);padding:10px 14px;margin:8px 0;border-radius:0 4px 4px 0}
+.consideration.warn{border-left-color:var(--red)}
+.consideration.ok{border-left-color:var(--green)}
+.consideration .c-title{font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--red);font-size:1em;margin-bottom:3px}
+.consideration p{font-size:.83em;margin:0}
+
+/* ============ BPM ============ */
+.bpm-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.8em;background:var(--paper)}
+.bpm-table th{background:var(--blue);color:var(--paper);font-family:'Cormorant Garamond',serif;font-weight:700;padding:6px 8px;text-align:left;border:1px solid var(--gold)}
+.bpm-table td{padding:5px 8px;border:1px solid var(--bg2);vertical-align:top}
+.bpm-table tr:nth-child(even) td{background:var(--bg)}
+
+/* ============ PRINT ============ */
+@media print{
+  body{background:white}
+  .doc{padding:15mm;max-width:100%}
+  .no-print{display:none !important}
+  .filters{display:none}
+  .breads-grid{display:none}
+  .cal-actions{display:none}
+  .calendar-tool{break-inside:avoid;box-shadow:none;border:1px solid var(--gold)}
+  .flow-diagram{break-inside:avoid}
+  h2.section{break-after:avoid;margin-top:10px}
+  table.ref{break-inside:avoid}
+  .consideration{break-inside:avoid}
+  .tl-item{break-inside:avoid}
+  .bpm-table{break-inside:avoid}
+  .print-only{display:block !important}
+  @page{size:A4;margin:12mm}
+  header.doc-header{padding-bottom:10px;margin-bottom:15px}
+  header.doc-header h1{font-size:1.8em}
+}
+
+.print-bar{position:fixed;top:20px;right:20px;z-index:100;display:flex;gap:8px}
+.print-bar button{
+  background:var(--green);color:var(--paper);border:none;padding:12px 22px;
+  border-radius:4px;cursor:pointer;font-family:'Cormorant Garamond',serif;
+  font-weight:700;font-size:1.05em;letter-spacing:1px;box-shadow:0 3px 10px rgba(0,0,0,.3);
+}
+.print-bar button:hover{background:var(--ink)}
+
+.print-summary{display:none;background:var(--paper);border:2px solid var(--red);border-radius:6px;padding:16px;margin:16px 0}
+.print-summary h3{font-family:'Cormorant Garamond',serif;color:var(--red);font-size:1.3em;margin-bottom:8px}
+.print-summary .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.88em;margin:10px 0}
+.print-summary .info div{background:var(--bg);padding:6px 10px;border-radius:3px}
+.print-summary .info strong{color:var(--red)}
+
+footer.doc-footer{margin-top:40px;padding-top:16px;border-top:3px double var(--gold);text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold);font-size:.95em}
+
+.empty-state{text-align:center;padding:30px;color:var(--gold);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.05em}
+
+.selected-badge{
+  display:inline-block;background:var(--green);color:var(--paper);
+  padding:2px 10px;border-radius:12px;font-size:.75em;
+  margin-left:8px;font-weight:600;
+}
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <button onclick="printSelected()">⎙ Imprimir seleccionados</button>
+  <button onclick="window.print()">⎙ Imprimir todo</button>
+</div>
+
+<div class="doc">
+
+<header class="doc-header">
+  <h1>⎖ Plan de Producción del Panadero</h1>
+  <div class="sub">Flujo de trabajo · Calendario eterno · Consideraciones técnicas · BPM</div>
+  <div class="meta">Documento imprimible · A4 · v3.0 · 25+ recetas</div>
+</header>
+
+<!-- PASO 1: ELEGIR FLUJO -->
+<h2 class="section"><span class="num">I</span>Paso 1 · Elegir el Flujo de Trabajo</h2>
+<p>Selecciona una o más recetas. Puedes filtrar por categoría. Las recetas seleccionadas se incluirán en el plan y en la impresión.</p>
+
+<div class="filters no-print" id="filters"></div>
+<div class="breads-grid no-print" id="breadsGrid"></div>
+
+<div class="cal-actions no-print">
+  <button class="cal-btn secondary" onclick="clearSelection()">↺ Limpiar selección</button>
+  <span id="selectionInfo" style="font-family:'Cormorant Garamond',serif;font-size:1.1em;color:var(--gold);align-self:center"></span>
+</div>
+
+<!-- PASO 2: CALENDARIO -->
+<h2 class="section"><span class="num">II</span>Paso 2 · Calendario Eterno</h2>
+<p>Ingresa la fecha y hora de inicio. El sistema calculará automáticamente cada etapa de las recetas seleccionadas.</p>
+
+<div class="calendar-tool no-print">
+  <div class="cal-grid">
+    <div class="cal-field">
+      <label>Recetas seleccionadas</label>
+      <select id="panType" multiple style="height:100px">
+      </select>
+    </div>
+    <div class="cal-field">
+      <label>Fecha de Inicio</label>
+      <input type="date" id="startDate">
+    </div>
+    <div class="cal-field">
+      <label>Hora de Inicio</label>
+      <input type="time" id="startTime" value="08:00">
+    </div>
+  </div>
+  <div class="cal-actions">
+    <button class="cal-btn" onclick="calcTimeline()">⎖ Calcular Plan</button>
+    <button class="cal-btn secondary" onclick="resetCalendar()">↺ Reset</button>
+  </div>
+  <div class="timeline" id="timeline">
+    <div class="empty-state">Selecciona una o más recetas y pulsa "Calcular Plan" para generar la línea de tiempo.</div>
+  </div>
+</div>
+
+<!-- RESUMEN IMPRESO -->
+<div class="print-summary" id="printSummary"></div>
+
+<!-- PASO 3: DIAGRAMAS -->
+<h2 class="section"><span class="num">III</span>Paso 3 · Diagramas de Flujo</h2>
+<div id="flowContainer">
+  <div class="empty-state">Selecciona una o más recetas para ver sus diagramas de flujo.</div>
+</div>
+
+<!-- PASO 4: CONSIDERACIONES -->
+<h2 class="section"><span class="num">IV</span>Consideraciones Técnicas</h2>
+<div id="considerationsContainer">
+  <div class="empty-state">Las consideraciones técnicas aparecerán aquí al elegir recetas.</div>
+</div>
+
+<!-- PASO 5: BPM -->
+<h2 class="section"><span class="num">V</span>Buenas Prácticas de Manufactura (BPM)</h2>
+<div id="bpmContainer">
+  <div class="empty-state">Las tablas de BPM aparecerán aquí al elegir recetas.</div>
+</div>
+
+<!-- PASO 6: REFERENCIAS -->
+<h2 class="section"><span class="num">VI</span>Tablas de Referencia Rápida</h2>
+
+<h3 class="sub">Temperaturas Internas de Cocción</h3>
+<table class="ref" id="refTemperaturas"></table>
+
+<h3 class="sub">Equivalencias de Levadura</h3>
+<table class="ref" id="refLevaduras"></table>
+
+<h3 class="sub">Reglas de Oro del Panadero</h3>
+<table class="ref" id="refReglas"></table>
+
+<footer class="doc-footer">
+  «Las matemáticas silencian el ruido. Los sentidos toman el mando.»<br>
+  Plan de Producción del Panadero · v3.0 · Basado en el Libro Panadería Gastón
+</footer>
+
+</div>
+
+<script src="flujoPan_data.js"></script>
+<script>
+/* ============ ESTADO GLOBAL ============ */
+let currentCategory = 'all';
+let selectedRecipes = new Set();
+let timelineData = {};
+
+/* ============ INIT ============ */
+const today = new Date();
+document.getElementById('startDate').value = today.toISOString().split('T')[0];
+
+// Poblar filtros
+const filtersEl = document.getElementById('filters');
+const allBtn = document.createElement('button');
+allBtn.className = 'filter-btn active';
+allBtn.textContent = 'Todas';
+allBtn.onclick = () => setFilter('all');
+filtersEl.appendChild(allBtn);
+
+Object.entries(CATEGORIAS).sort((a,b)=>a[1].orden-b[1].orden).forEach(([key,cat])=>{
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = `${cat.icono} ${cat.nombre}`;
+  btn.dataset.cat = key;
+  btn.onclick = () => setFilter(key);
+  filtersEl.appendChild(btn);
+});
+
+// Poblar grid de recetas
+const breadsGrid = document.getElementById('breadsGrid');
+const panTypeSelect = document.getElementById('panType');
+
+function renderGrid(){
+  breadsGrid.innerHTML = '';
+  Object.entries(PROCESOS).forEach(([key,p])=>{
+    if(currentCategory !== 'all' && p.cat !== currentCategory) return;
+    const cat = CATEGORIAS[p.cat];
+    const card = document.createElement('div');
+    card.className = 'bread-card' + (selectedRecipes.has(key) ? ' selected' : '');
+    card.dataset.key = key;
+    card.innerHTML = `
+      <div class="check">✓</div>
+      <div class="icon">${p.icon}</div>
+      <div class="cat">${cat ? cat.nombre : ''}</div>
+      <div class="name">${p.name}</div>
+      <div class="time">⏱ ${p.time}</div>
+    `;
+    card.onclick = ()=>toggleRecipe(key);
+    breadsGrid.appendChild(card);
+  });
+}
+
+function renderSelect(){
+  panTypeSelect.innerHTML = '';
+  selectedRecipes.forEach(key=>{
+    const p = PROCESOS[key];
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = p.name;
+    opt.selected = true;
+    panTypeSelect.appendChild(opt);
+  });
+}
+
+function setFilter(cat){
+  currentCategory = cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    b.classList.toggle('active', (b.dataset.cat || 'all') === cat);
+  });
+  renderGrid();
+}
+
+function toggleRecipe(key){
+  if(selectedRecipes.has(key)) selectedRecipes.delete(key);
+  else selectedRecipes.add(key);
+  renderGrid();
+  renderSelect();
+  updateSelectionInfo();
+  renderFlows();
+  renderConsiderations();
+  renderBPM();
+}
+
+function clearSelection(){
+  selectedRecipes.clear();
+  renderGrid();
+  renderSelect();
+  updateSelectionInfo();
+  renderFlows();
+  renderConsiderations();
+  renderBPM();
+  resetCalendar();
+}
+
+function updateSelectionInfo(){
+  const info = document.getElementById('selectionInfo');
+  info.textContent = selectedRecipes.size > 0
+    ? `${selectedRecipes.size} receta(s) seleccionada(s)`
+    : '';
+}
+
+/* ============ DIAGRAMAS ============ */
+function renderFlows(){
+  const container = document.getElementById('flowContainer');
+  if(selectedRecipes.size === 0){
+    container.innerHTML = '<div class="empty-state">Selecciona una o más recetas para ver sus diagramas.</div>';
+    return;
+  }
+  let html = '';
+  selectedRecipes.forEach(key=>{
+    const proc = PROCESOS[key];
+    html += `<h3 class="sub">${proc.icon} ${proc.name} <span class="selected-badge">${proc.time}</span></h3>`;
+    html += renderFlowSVG(proc);
+  });
+  container.innerHTML = html;
+}
+
+function renderFlowSVG(proc){
+  const stages = proc.stages;
+  const n = stages.length;
+  const boxW = 130, boxH = 60, gap = 20;
+  const cols = Math.min(5, n);
+  const rows = Math.ceil(n / cols);
+  const svgW = cols * (boxW + gap) + 40;
+  const svgH = rows * (boxH + 60) + 80;
+
+  let svg = `<div class="flow-diagram"><svg class="flow-svg" viewBox="0 0 ${svgW} ${svgH}">`;
+
+  stages.forEach((s, i)=>{
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = 20 + col * (boxW + gap);
+    const y = 30 + row * (boxH + 60);
+
+    let fill = '#4a7a3a';
+    const nameL = s.name.toLowerCase();
+    if(nameL.includes('ferm') || nameL.includes('leud') || nameL.includes('bloque') || nameL.includes('refresco') || nameL.includes('reposo')) fill = '#b8862e';
+    if(nameL.includes('horne') || nameL.includes('corte') || nameL.includes('fritura')) fill = '#a83232';
+    if(nameL.includes('frío') || nameL.includes('enfriad') || nameL.includes('atemper')) fill = '#3a5a7a';
+    if(nameL.includes('divis') || nameL.includes('form') || nameL.includes('boll') || nameL.includes('ovill') || nameL.includes('armado')) fill = '#3a5a7a';
+
+    svg += `<g>
+      <rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="5" fill="${fill}" stroke="#2b1d0e" stroke-width="1.5"/>
+      <text x="${x+boxW/2}" y="${y+18}" text-anchor="middle" fill="#fffaf0" class="stage-label" font-size="11">${i+1}. ${s.name}</text>
+      <text x="${x+boxW/2}" y="${y+34}" text-anchor="middle" fill="#fffaf0" font-size="9">${formatDuration(s.dur)}</text>
+      <text x="${x+boxW/2}" y="${y+48}" text-anchor="middle" fill="#fffaf0" font-size="8" font-style="italic" opacity="0.9">${s.desc.substring(0,35)}${s.desc.length>35?'...':''}</text>
+    </g>`;
+
+    if(i < n-1){
+      const nextCol = (i+1) % cols;
+      const nextRow = Math.floor((i+1) / cols);
+      if(nextRow === row){
+        svg += `<line x1="${x+boxW}" y1="${y+boxH/2}" x2="${x+boxW+gap}" y2="${y+boxH/2}" stroke="#a83232" stroke-width="2"/>
+                <polygon points="${x+boxW+gap},${y+boxH/2} ${x+boxW+gap-7},${y+boxH/2-4} ${x+boxW+gap-7},${y+boxH/2+4}" fill="#a83232"/>`;
+      } else {
+        svg += `<path d="M ${x+boxW/2} ${y+boxH} Q ${x+boxW/2} ${y+boxH+20} ${20+nextCol*(boxW+gap)+boxW/2} ${y+boxH+20} T ${20+nextCol*(boxW+gap)+boxW/2} ${y+boxH+50}" fill="none" stroke="#a83232" stroke-width="2" stroke-dasharray="4,2"/>`;
+      }
+    }
+  });
+
+  const legY = svgH - 40;
+  svg += `<g transform="translate(20,${legY})">
+    <rect x="0" y="0" width="12" height="12" fill="#4a7a3a"/><text x="18" y="10" font-size="9" fill="#2b1d0e">Mezcla/amasado</text>
+    <rect x="120" y="0" width="12" height="12" fill="#b8862e"/><text x="138" y="10" font-size="9" fill="#2b1d0e">Fermentación</text>
+    <rect x="230" y="0" width="12" height="12" fill="#3a5a7a"/><text x="248" y="10" font-size="9" fill="#2b1d0e">Formado/reposo</text>
+    <rect x="340" y="0" width="12" height="12" fill="#a83232"/><text x="358" y="10" font-size="9" fill="#2b1d0e">Horneado</text>
+  </g>`;
+
+  svg += `</svg></div>`;
+  return svg;
+}
+
+/* ============ CONSIDERACIONES ============ */
+function renderConsiderations(){
+  const container = document.getElementById('considerationsContainer');
+  if(selectedRecipes.size === 0){
+    container.innerHTML = '<div class="empty-state">Las consideraciones aparecerán aquí.</div>';
+    return;
+  }
+  let html = '';
+  selectedRecipes.forEach(key=>{
+    const proc = PROCESOS[key];
+    if(!proc.considerations || proc.considerations.length === 0) return;
+    html += `<h3 class="sub">${proc.icon} ${proc.name}</h3>`;
+    proc.considerations.forEach(c=>{
+      html += `<div class="consideration ${c.type}">
+        <div class="c-title">${c.title}</div>
+        <p>${c.text}</p>
+      </div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+/* ============ BPM ============ */
+function renderBPM(){
+  const container = document.getElementById('bpmContainer');
+  if(selectedRecipes.size === 0){
+    container.innerHTML = '<div class="empty-state">Las tablas de BPM aparecerán aquí.</div>';
+    return;
+  }
+  let html = '';
+  selectedRecipes.forEach(key=>{
+    const proc = PROCESOS[key];
+    if(!proc.bpm || proc.bpm.length === 0) return;
+    html += `<h3 class="sub">${proc.icon} ${proc.name}</h3>`;
+    html += `<table class="bpm-table"><tr><th>Etapa</th><th>Peligro</th><th>Control</th><th>Límite crítico</th></tr>`;
+    proc.bpm.forEach(b=>{
+      html += `<tr><td>${b.etapa}</td><td>${b.peligro}</td><td>${b.control}</td><td>${b.limite}</td></tr>`;
+    });
+    html += `</table>`;
+  });
+  container.innerHTML = html;
+}
+
+/* ============ REFERENCIAS ============ */
+function renderReferences(){
+  const t1 = document.getElementById('refTemperaturas');
+  t1.innerHTML = '<tr><th>Producto</th><th>Horno</th><th>T. interna</th><th>Tiempo aprox.</th></tr>';
+  REFERENCIAS.temperaturas.forEach(r=>{
+    t1.innerHTML += `<tr><td>${r.producto}</td><td>${r.horno}</td><td>${r.interna}</td><td>${r.tiempo}</td></tr>`;
+  });
+
+  const t2 = document.getElementById('refLevaduras');
+  t2.innerHTML = '<tr><th>Tipo</th><th>Equivalencia</th><th>Uso por kg harina</th></tr>';
+  REFERENCIAS.levaduras.forEach(r=>{
+    t2.innerHTML += `<tr><td>${r.tipo}</td><td>${r.equivalencia}</td><td>${r.uso}</td></tr>`;
+  });
+
+  const t3 = document.getElementById('refReglas');
+  t3.innerHTML = '<tr><th>Regla</th><th>Aplicación</th></tr>';
+  REFERENCIAS.reglas_oro.forEach(r=>{
+    t3.innerHTML += `<tr><td>${r.regla}</td><td>${r.aplicacion}</td></tr>`;
+  });
+}
+
+/* ============ CALENDARIO ============ */
+function formatDuration(mins){
+  if(mins < 60) return mins + ' min';
+  const h = Math.floor(mins/60);
+  const m = mins % 60;
+  if(m === 0) return h + ' h';
+  return h + ' h ' + m + ' min';
+}
+function addMinutes(date, mins){ return new Date(date.getTime() + mins * 60000); }
+function formatDateTime(date){
+  const dias = ['dom','lun','mar','mié','jue','vie','sáb'];
+  const d = dias[date.getDay()];
+  const dd = String(date.getDate()).padStart(2,'0');
+  const mm = String(date.getMonth()+1).padStart(2,'0');
+  const hh = String(date.getHours()).padStart(2,'0');
+  const mi = String(date.getMinutes()).padStart(2,'0');
+  return `${d} ${dd}/${mm} · ${hh}:${mi}`;
+}
+
+function calcTimeline(){
+  if(selectedRecipes.size === 0){alert('Selecciona al menos una receta');return;}
+  const dateStr = document.getElementById('startDate').value;
+  const timeStr = document.getElementById('startTime').value;
+  if(!dateStr || !timeStr){alert('Completa fecha y hora');return;}
+
+  const start = new Date(dateStr + 'T' + timeStr);
+  const now = new Date();
+  let html = '';
+  let allStages = [];
+
+  selectedRecipes.forEach(key=>{
+    const proc = PROCESOS[key];
+    let current = new Date(start);
+    proc.stages.forEach((stage, i)=>{
+      const end = addMinutes(current, stage.dur);
+      allStages.push({
+        recipe: proc.name,
+        icon: proc.icon,
+        stageNum: i+1,
+        name: stage.name,
+        desc: stage.desc,
+        start: new Date(current),
+        end: end,
+        dur: stage.dur
+      });
+      current = end;
+    });
+  });
+
+  // Ordenar por hora de inicio
+  allStages.sort((a,b)=>a.start - b.start);
+
+  html += `<h3 class="sub" style="margin-top:0">Plan consolidado · ${selectedRecipes.size} receta(s)</h3>`;
+  html += `<p style="font-size:.85em;color:var(--gold);margin-bottom:14px">
+    <b>Inicio:</b> ${formatDateTime(start)} · <b>Total etapas:</b> ${allStages.length}
+  </p>`;
+
+  allStages.forEach((s, i)=>{
+    let cls = '';
+    if(s.end < now) cls = 'done';
+    else if(s.start < now && s.end >= now) cls = 'next';
+    html += `
+      <div class="tl-item ${cls}">
+        <div class="tl-time">${formatDateTime(s.start)} → ${formatDateTime(s.end)}</div>
+        <div class="tl-stage">${s.icon} ${s.recipe} · ${s.stageNum}. ${s.name} <span class="tl-dur">${formatDuration(s.dur)}</span></div>
+        <div class="tl-desc">${s.desc}</div>
+      </div>
+    `;
+  });
+
+  const lastEnd = allStages.reduce((max,s)=>s.end > max ? s.end : max, start);
+  html += `<div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:4px;border-left:4px solid var(--red)">
+    <b style="font-family:'Cormorant Garamond',serif;color:var(--red);font-size:1.1em">⎖ Fin del proceso:</b>
+    <span style="font-family:'Cormorant Garamond',serif;font-size:1.2em;font-weight:700;color:var(--ink);margin-left:8px">${formatDateTime(lastEnd)}</span>
+  </div>`;
+
+  document.getElementById('timeline').innerHTML = html;
+
+  // Resumen impresión
+  document.getElementById('printSummary').innerHTML = `
+    <h3>⎖ Resumen del Plan de Producción</h3>
+    <div class="info">
+      <div><strong>Recetas:</strong> ${selectedRecipes.size}</div>
+      <div><strong>Etapas:</strong> ${allStages.length}</div>
+      <div><strong>Inicio:</strong> ${formatDateTime(start)}</div>
+      <div><strong>Fin:</strong> ${formatDateTime(lastEnd)}</div>
+      <div><strong>Generado:</strong> ${new Date().toLocaleString('es-AR')}</div>
+      <div><strong>Versión:</strong> v3.0</div>
+    </div>
+    <p style="font-size:.85em;margin-top:8px"><b>Recetas incluidas:</b> ${Array.from(selectedRecipes).map(k=>PROCESOS[k].name).join(' · ')}</p>
+  `;
+}
+
+function resetCalendar(){
+  document.getElementById('timeline').innerHTML = '<div class="empty-state">Selecciona recetas y pulsa "Calcular Plan".</div>';
+  document.getElementById('printSummary').innerHTML = '';
+}
+
+function printSelected(){
+  if(selectedRecipes.size === 0){alert('Selecciona al menos una receta');return;}
+  window.print();
+}
+
+/* ============ INIT ============ */
+renderGrid();
+renderReferences();
+</script>
+
+</body>
+</html>

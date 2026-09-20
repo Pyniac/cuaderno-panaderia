@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Receta de Panadería",
+  "description": "Esquema para validar las recetas de la app Cuaderno de Panadería Años 40",
+  "type": "object",
+  "required": ["id", "nombre", "categoria", "icono", "fuente", "version", "estado", "tiempo_total", "temperatura_horno", "hidratacion", "rinde", "ingredientes", "etapas", "consideraciones", "bpm", "tips", "variantes", "referencias_cruzadas", "metadata"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Slug único sin espacios ni acentos"
+    },
+    "nombre": { "type": "string", "minLength": 1 },
+    "categoria": {
+      "type": "string",
+      "enum": ["clasicos", "manteca", "grasa", "regionales", "inmigrantes", "fiesta", "panettone", "bases"]
+    },
+    "icono": { "type": "string" },
+    "fuente": { "type": "string" },
+    "version": { "type": "string" },
+    "estado": {
+      "type": "string",
+      "enum": ["publicada", "borrador", "deprecada"]
+    },
+    "tiempo_total": { "type": "string" },
+    "temperatura_horno": { "type": "string" },
+    "hidratacion": { "type": "string" },
+    "rinde": { "type": "string" },
+    "ingredientes": {
+      "type": "object",
+      "required": ["harina_total_g", "grupos"],
+      "properties": {
+        "harina_total_g": { "type": "number", "minimum": 0 },
+        "grupos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["nombre", "items"],
+            "properties": {
+              "nombre": { "type": "string" },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["nombre", "cantidad", "unidad", "es_harina"],
+                  "properties": {
+                    "nombre": { "type": "string" },
+                    "cantidad": { "type": "number", "minimum": 0 },
+                    "unidad": {
+                      "type": "string",
+                      "enum": ["g", "ml", "u", "cdas", "cditas", "tazas", "fetas", "láminas", "parte", "partes", "receta", "molde", "planta", "latas", "tallo", "rectángulo 10×30 cm", "cuadrado 12×12 cm", "receta (36 piezas)"]
+                    },
+                    "es_harina": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "etapas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["orden", "nombre", "duracion_min", "descripcion", "notas_tecnicas"],
+        "properties": {
+          "orden": { "type": "integer", "minimum": 1 },
+          "nombre": { "type": "string" },
+          "duracion_min": { "type": "integer", "minimum": 0 },
+          "descripcion": { "type": "string" },
+          "notas_tecnicas": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "consideraciones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tipo", "titulo", "texto"],
+        "properties": {
+          "tipo": { "type": "string", "enum": ["ok", "warn", "info"] },
+          "titulo": { "type": "string" },
+          "texto": { "type": "string" }
+        }
+      }
+    },
+    "bpm": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["etapa", "peligro", "control", "limite_critico"],
+        "properties": {
+          "etapa": { "type": "string" },
+          "peligro": { "type": "string" },
+          "control": { "type": "string" },
+          "limite_critico": { "type": "string" }
+        }
+      }
+    },
+    "tips": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "variantes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "referencias_cruzadas": {
+      "type": "object",
+      "required": ["temperaturas_relacionadas", "prefermentos_sugeridos", "productos_similares"],
+      "properties": {
+        "temperaturas_relacionadas": { "type": "array", "items": { "type": "string" } },
+        "prefermentos_sugeridos": { "type": "array", "items": { "type": "string" } },
+        "productos_similares": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["autor_receta", "fecha_creacion", "fecha_actualizacion", "tags"],
+      "properties": {
+        "autor_receta": { "type": "string" },
+        "fecha_creacion": { "type": "string", "format": "date" },
+        "fecha_actualizacion": { "type": "string", "format": "date" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

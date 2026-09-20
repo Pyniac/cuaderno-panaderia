@@ -1,0 +1,10 @@
+📁 cuaderno-panaderia/
+├── 📄 index.html          (la app)
+├── 📁 data/
+│   ├── 📄 recetas.json    (base de datos completa)
+│   ├── 📄 categorias.json (categorías y metadatos)
+│   └── 📄 referencias.json (tablas de consulta)
+├── 📁 assets/
+│   ├── 🖼 iconos/
+│   └── 🎨 estilos/
+└── 📄 README.md           (guía de actualización)

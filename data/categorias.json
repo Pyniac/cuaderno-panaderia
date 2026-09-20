@@ -1,0 +1,60 @@
+{
+  "categorias": [
+    {
+      "id": "clasicos",
+      "nombre": "Los Clásicos",
+      "icono": "🥖",
+      "orden": 1,
+      "descripcion": "Los panes de consumo diario: flautas, minones, baguetines, pebetes, chips, bizcochitos, cuernitos, criollitos, negritos, pan de miga, figacitas, libritos y cremonas."
+    },
+    {
+      "id": "manteca",
+      "nombre": "Facturas de Manteca",
+      "icono": "🥐",
+      "orden": 2,
+      "descripcion": "Las reinas de la panadería argentina: masas hojaldradas enriquecidas con manteca. Medialunas, moños, doble vuelta, calzones rotos, ochos, bandas de manzana y tortitas negras."
+    },
+    {
+      "id": "grasa",
+      "nombre": "Facturas de Grasa",
+      "icono": "🥟",
+      "orden": 3,
+      "descripcion": "Más hojaldradas, más crujientes, más rústicas. Medialunas de grasa, santiagueras, lengüitas, vigilantes, cielitos y sacramentos rellenos."
+    },
+    {
+      "id": "regionales",
+      "nombre": "Panes Regionales",
+      "icono": "🌾",
+      "orden": 4,
+      "descripcion": "La diversidad geográfica y cultural de Argentina: pan de campo, pan con chicharrones, raspaditas mendocinas, chipas correntinos, chipas so'o y tortilla santiagueña."
+    },
+    {
+      "id": "inmigrantes",
+      "nombre": "Panes de Inmigrantes",
+      "icono": "🌍",
+      "orden": 5,
+      "descripcion": "El legado de las olas inmigratorias: ciabatta italiana, trenza judía, pletzalaj, pan con miel alemán, pan integral con nueces y pasas, y pan piñita venezolano."
+    },
+    {
+      "id": "fiesta",
+      "nombre": "Panes de Fiesta",
+      "icono": "🎉",
+      "orden": 6,
+      "descripcion": "Las preparaciones que coronan la panadería en ocasiones especiales: pastelitos, tortas fritas, pan dulce genovés, masa de rosca, rosca de Reyes, trenza vienesa, bollitos surtidos, pancitos de leche y miguelitos."
+    },
+    {
+      "id": "panettone",
+      "nombre": "Panettone",
+      "icono": "🍰",
+      "orden": 7,
+      "descripcion": "El sistema biotecnológico más complejo de la panadería. Panettone clásico con Lievito Madre y Panettone moderno con Biga."
+    },
+    {
+      "id": "bases",
+      "nombre": "Recetas Base",
+      "icono": "🧂",
+      "orden": 8,
+      "descripcion": "Preparaciones auxiliares que se usan en muchas recetas: crema pastelera, chuño, doradura, almíbar y glasé."
+    }
+  ]
+}

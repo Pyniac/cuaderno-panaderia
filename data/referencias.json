@@ -1,0 +1,57 @@
+{
+  "temperaturas": [
+    { "producto": "Pan de molde / enriquecido", "horno": "175°C", "interna": "85-88°C", "tiempo": "30-40 min" },
+    { "producto": "Centeno", "horno": "190°C", "interna": "88-90°C", "tiempo": "45-60 min" },
+    { "producto": "Integral", "horno": "205°C", "interna": "90-93°C", "tiempo": "40-50 min" },
+    { "producto": "Baguette / flauta", "horno": "230°C", "interna": "95-96°C", "tiempo": "18-22 min" },
+    { "producto": "Pan de campo (MM)", "horno": "250→230°C", "interna": "96°C", "tiempo": "40-50 min" },
+    { "producto": "Ciabatta", "horno": "245°C", "interna": "95°C", "tiempo": "25-30 min" },
+    { "producto": "Panettone", "horno": "165-170°C", "interna": "94°C", "tiempo": "45-55 min" },
+    { "producto": "Pan dulce", "horno": "150-160°C", "interna": "76-78°C", "tiempo": "50-60 min" },
+    { "producto": "Brioche", "horno": "180°C", "interna": "88-90°C", "tiempo": "25-35 min" },
+    { "producto": "Facturas", "horno": "200°C", "interna": "—", "tiempo": "12-15 min" },
+    { "producto": "Pizza", "horno": "280-320°C", "interna": "—", "tiempo": "5-8 min" }
+  ],
+  "levaduras": [
+    { "tipo": "Fresca prensada", "equivalencia": "100%", "uso": "15-20 g (panes); 30-40 g (enriquecidos)" },
+    { "tipo": "Seca activa", "equivalencia": "40-50% de la fresca", "uso": "5-7 g" },
+    { "tipo": "Seca instantánea", "equivalencia": "33% de la fresca", "uso": "3-5 g" },
+    { "tipo": "Osmotolerante", "equivalencia": "—", "uso": "10-15 g (masas >15% azúcar)" }
+  ],
+  "reglas_oro": [
+    { "regla": "×2 / 9°C", "aplicacion": "Por cada 9°C menos, el tiempo de fermentación se duplica." },
+    { "regla": "TDM 24-26°C", "aplicacion": "Temperatura final de masa ideal para panes directos." },
+    { "regla": "Sal 1.8-2.2%", "aplicacion": "Rango de equilibrio. Por debajo: masa débil. Por encima: fermentación lenta." },
+    { "regla": "Prueba del dedo", "aplicacion": "Recuperación lenta con marca = listo. Rápida = subfermentado. Sin recuperación = sobrefermentado." },
+    { "regla": "Prueba de membrana", "aplicacion": "Estirar masa hasta ver lámina translúcida sin romperse = gluten desarrollado." },
+    { "regla": "Volteo panettone", "aplicacion": "Inmediato al salir del horno, boca abajo, 10-12 h." }
+  ],
+  "conversiones": [
+    { "medida": "1 taza de harina", "equivalente": "120-130 g" },
+    { "medida": "1 taza de azúcar", "equivalente": "200 g" },
+    { "medida": "1 taza de manteca", "equivalente": "225 g" },
+    { "medida": "1 taza de leche", "equivalente": "240 ml" },
+    { "medida": "1 cda", "equivalente": "15 ml" },
+    { "medida": "1 cdita", "equivalente": "5 ml" },
+    { "medida": "1 huevo", "equivalente": "50 g aproximadamente" },
+    { "medida": "1 yema", "equivalente": "20 g aproximadamente" },
+    { "medida": "1 clara", "equivalente": "30 g aproximadamente" }
+  ],
+  "glosario": [
+    { "termino": "Amasado", "definicion": "Proceso de mezclar, trabajar y desarrollar la masa mediante energía mecánica." },
+    { "termino": "Autólisis", "definicion": "Reposo de harina y agua sin levadura ni sal para hidratar proteínas y formar gluten." },
+    { "termino": "Biga", "definicion": "Prefermento italiano firme (50-60% hidratación) con levadura comercial." },
+    { "termino": "BPM", "definicion": "Buenas Prácticas de Manufactura. Conjunto de medidas preventivas para garantizar inocuidad." },
+    { "termino": "Empaste", "definicion": "Mezcla de grasa y harina que se intercala en la masa para laminar." },
+    { "termino": "HACCP", "definicion": "Análisis de Peligros y Puntos Críticos de Control. Sistema preventivo de inocuidad." },
+    { "termino": "Hidratación", "definicion": "Relación entre agua y harina, expresada en porcentaje panadero." },
+    { "termino": "Laminado", "definicion": "Técnica de intercalar capas de grasa entre capas de masa." },
+    { "termino": "Lievito Madre", "definicion": "Masa madre italiana firme (50% hidratación) mantenida con refrescos." },
+    { "termino": "Maillard", "definicion": "Reacción entre aminoácidos y azúcares reductores que da color y aroma a la corteza." },
+    { "termino": "Poolish", "definicion": "Prefermento líquido (100% hidratación) con levadura comercial." },
+    { "termino": "PCC", "definicion": "Punto Crítico de Control. Etapa donde se controla un peligro significativo." },
+    { "termino": "Retrogradación", "definicion": "Re cristalización de la amilosa que endurece el pan (envejecimiento)." },
+    { "termino": "TDM", "definicion": "Temperatura Deseada de Masa. Temperatura final del amasado." },
+    { "termino": "Vapor", "definicion": "Agua en estado gaseoso que se genera en el horno para retrasar la corteza." }
+  ]
+}
