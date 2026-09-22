@@ -1,0 +1,13 @@
+{
+  "name": "cuaderno-panaderia",
+  "version": "1.0.0",
+  "description": "PWA de recetas de panadería argentina basadas en el libro Panadería Gastón",
+  "private": true,
+  "scripts": {
+    "start": "npx serve -p 8000",
+    "sync": "bash scripts/sync.sh",
+    "validate": "node validar.js"
+  },
+  "author": "Pyniac",
+  "license": "MIT"
+}
