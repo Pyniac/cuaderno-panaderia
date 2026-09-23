@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración — Cuaderno de Panadería</title>
+  <link rel="stylesheet" href="admin.css">
+
+  <script>
+    (function () {
+      function mostrar(msg) {
+        var div = document.getElementById('error-pantalla');
+        if (!div) {
+          div = document.createElement('div');
+          div.id = 'error-pantalla';
+          div.style.cssText = 'background:#fee;color:#900;padding:1rem;font-family:monospace;font-size:0.85rem;white-space:pre-wrap;border-bottom:3px solid #900;position:relative;z-index:9999';
+          if (document.body) {
+            document.body.insertBefore(div, document.body.firstChild);
+          } else {
+            document.addEventListener('DOMContentLoaded', function () {
+              document.body.insertBefore(div, document.body.firstChild);
+            });
+          }
+        }
+        div.style.display = 'block';
+        div.textContent += msg + '\n\n';
+      }
+      window.addEventListener('error', function (e) {
+        mostrar('⚠️ ERROR: ' + (e.message || '(sin mensaje)') +
+                '\nEn: ' + (e.filename || '?') + ':' + (e.lineno || '?') + ':' + (e.colno || '?'));
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        mostrar('⚠️ PROMISE RECHAZADA: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+      });
+    })();
+  </script>
+</head>
+<body>
+
+  <div id="error-pantalla" style="display:none;"></div>
+
+  <div id="bloqueo" class="bloqueo oculto">
+    <div class="bloqueo-caja">
+      <h1>Acceso restringido</h1>
+      <p>Este panel solo funciona en local o con token de acceso.</p>
+    </div>
+  </div>
+
+  <div id="app" class="oculto">
+
+    <!-- VISTA: LISTA -->
+    <div id="vista-lista">
+      <header class="cabecera">
+        <h1>Administración</h1>
+        <p class="subtitulo">Cuaderno de Panadería — Años 40</p>
+        <div class="estado" id="estado-global">Sin datos cargados</div>
+      </header>
+
+      <section class="barra-acciones">
+        <button id="btn-cargar" class="btn btn-primario">Cargar datos actuales</button>
+        <button id="btn-importar" class="btn">Importar JSON</button>
+        <button id="btn-exportar" class="btn">Exportar recetas.json</button>
+        <button id="btn-exportar-appconfig" class="btn">Exportar app_config.json</button>
+        <input type="file" id="input-importar" accept=".json" multiple hidden>
+      </section>
+
+      <section class="filtros">
+        <input type="search" id="filtro-busqueda" placeholder="Buscar por nombre, ID o tag...">
+        <select id="filtro-categoria">
+          <option value="">Todas las categorías</option>
+        </select>
+        <select id="filtro-estado">
+          <option value="">Todos los estados</option>
+          <option value="publicada">Publicada</option>
+          <option value="borrador">Borrador</option>
+          <option value="deprecada">Deprecada</option>
+        </select>
+      </section>
+
+      <section class="lista-recetas">
+        <table id="tabla-recetas">
+          <thead>
+            <tr>
+              <th data-orden="id">ID</th>
+              <th data-orden="nombre">Nombre</th>
+              <th data-orden="categoria">Categoría</th>
+              <th data-orden="estado">Estado</th>
+              <th data-orden="harina_total_g">Harina (g)</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpo-tabla">
+            <tr><td colspan="6" class="vacio">No hay recetas cargadas.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <button id="btn-nueva" class="btn-flotante">+ Nueva receta</button>
+
+      <footer class="pie">
+        <span id="pie-estado">Sin cambios</span>
+      </footer>
+    </div>
+
+    <!-- VISTA: FORMULARIO -->
+    <div id="vista-formulario" class="oculto">
+      <header class="cabecera">
+        <button id="btn-volver" class="btn">← Volver a la lista</button>
+        <h1 id="form-titulo">Editar receta</h1>
+        <p class="subtitulo" id="form-subtitulo"></p>
+      </header>
+
+      <form id="form-receta" autocomplete="off">
+
+        <!-- IDENTIFICACIÓN -->
+        <fieldset class="seccion">
+          <legend>Identificación</legend>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-id">ID (snake_case, sin acentos)</label>
+              <input type="text" id="campo-id" name="id" required pattern="[a-z0-9_]+">
+              <small class="ayuda">Ejemplo: medialunas_manteca, pan_campo</small>
+            </div>
+            <div class="campo campo-icono">
+              <label for="campo-icono">Ícono</label>
+              <input type="text" id="campo-icono" name="icono" maxlength="4" placeholder="🥖">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="campo-nombre">Nombre</label>
+            <input type="text" id="campo-nombre" name="nombre" required>
+          </div>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-categoria">Categoría</label>
+              <select id="campo-categoria" name="categoria" required></select>
+            </div>
+
+            <div class="campo">
+              <label for="campo-estado">Estado</label>
+              <select id="campo-estado" name="estado" required>
+                <option value="publicada">Publicada</option>
+                <option value="borrador">Borrador</option>
+                <option value="deprecada">Deprecada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-version">Versión</label>
+              <input type="text" id="campo-version" name="version" placeholder="1.0">
+            </div>
+            <div class="campo">
+              <label for="campo-fuente">Fuente</label>
+              <input type="text" id="campo-fuente" name="fuente" placeholder="Libro Panadería Gastón, Cap. X">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- CARACTERÍSTICAS -->
+        <fieldset class="seccion">
+          <legend>Características</legend>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-tiempo-total">Tiempo total</label>
+              <input type="text" id="campo-tiempo-total" name="tiempo_total" placeholder="3.5-5 h">
+            </div>
+            <div class="campo">
+              <label for="campo-temperatura-horno">Temperatura de horno</label>
+              <input type="text" id="campo-temperatura-horno" name="temperatura_horno" placeholder="200-220°C">
+            </div>
+          </div>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-hidratacion">Hidratación</label>
+              <input type="text" id="campo-hidratacion" name="hidratacion" placeholder="58-62%">
+            </div>
+            <div class="campo">
+              <label for="campo-rinde">Rinde</label>
+              <input type="text" id="campo-rinde" name="rinde" placeholder="8 flautas de 100 g">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="campo-descripcion">Descripción corta</label>
+            <textarea id="campo-descripcion" name="descripcion" rows="2"></textarea>
+          </div>
+        </fieldset>
+
+        <!-- INGREDIENTES -->
+        <fieldset class="seccion">
+          <legend>Ingredientes</legend>
+
+          <div class="resumen-harina">
+            Harina total: <strong id="harina-total">0</strong> g
+          </div>
+
+          <div id="lista-grupos"></div>
+
+          <button type="button" class="btn" id="btn-agregar-grupo">+ Agregar grupo</button>
+        </fieldset>
+
+        <!-- ETAPAS -->
+        <fieldset class="seccion">
+          <legend>Etapas / Flujo de trabajo</legend>
+          <div id="lista-etapas"></div>
+          <button type="button" class="btn" id="btn-agregar-etapa">+ Agregar etapa</button>
+        </fieldset>
+
+        <!-- VARIANTES -->
+        <fieldset class="seccion">
+          <legend>Variantes</legend>
+          <div id="lista-variantes"></div>
+          <button type="button" class="btn" id="btn-agregar-variante">+ Agregar variante</button>
+        </fieldset>
+
+                <!-- TIPS -->
+        <fieldset class="seccion">
+          <legend>Tips</legend>
+          <div id="lista-tips"></div>
+          <button type="button" class="btn" id="btn-agregar-tip">+ Agregar tip</button>
+        </fieldset>
+
+        <!-- BPM -->
+        <fieldset class="seccion">
+          <legend>BPM (Buenas Prácticas de Manufactura)</legend>
+          <div id="lista-bpm"></div>
+          <button type="button" class="btn" id="btn-agregar-bpm">+ Agregar BPM</button>
+        </fieldset>
+
+        <!-- CONSIDERACIONES -->
+        <fieldset class="seccion">
+          <legend>Consideraciones técnicas</legend>
+          <div id="lista-consideraciones"></div>
+          <button type="button" class="btn" id="btn-agregar-consideracion">+ Agregar consideración</button>
+        </fieldset>
+
+                <!-- REFERENCIAS CRUZADAS -->
+        <fieldset class="seccion">
+          <legend>Referencias cruzadas</legend>
+
+          <div class="subseccion">
+            <h3 class="sub-titulo">Temperaturas relacionadas</h3>
+            <div id="lista-temperaturas-relacionadas"></div>
+            <button type="button" class="btn" data-agregar-lista="temperaturas_relacionadas">+ Agregar</button>
+          </div>
+
+          <div class="subseccion">
+            <h3 class="sub-titulo">Prefermentos sugeridos</h3>
+            <div id="lista-prefermentos-sugeridos"></div>
+            <button type="button" class="btn" data-agregar-lista="prefermentos_sugeridos">+ Agregar</button>
+          </div>
+
+          <div class="subseccion">
+            <h3 class="sub-titulo">Productos similares</h3>
+            <div id="lista-productos-similares"></div>
+            <button type="button" class="btn" data-agregar-lista="productos_similares">+ Agregar</button>
+          </div>
+        </fieldset>
+
+        <!-- METADATA -->
+        <fieldset class="seccion">
+          <legend>Metadata</legend>
+
+          <div class="campo-fila">
+            <div class="campo">
+              <label for="campo-autor">Autor de la receta</label>
+              <input type="text" id="campo-autor" name="autor_receta" placeholder="Claudio Olijavetzky">
+            </div>
+            <div class="campo">
+              <label for="campo-fecha-creacion">Fecha de creación</label>
+              <input type="date" id="campo-fecha-creacion" name="fecha_creacion">
+            </div>
+            <div class="campo">
+              <label for="campo-fecha-actualizacion">Fecha de actualización</label>
+              <input type="date" id="campo-fecha-actualizacion" name="fecha_actualizacion">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="campo-tags">Tags (separados por coma)</label>
+            <input type="text" id="campo-tags" name="tags" placeholder="pan frances, corteza crujiente, diario">
+          </div>
+        </fieldset>
+
+        <!-- ACCIONES -->
+        <div class="acciones-form">
+          <button type="submit" class="btn btn-primario">Guardar</button>
+          <button type="button" class="btn" id="btn-guardar-duplicar">Guardar y duplicar</button>
+          <button type="button" class="btn" id="btn-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-peligro" id="btn-eliminar">Eliminar receta</button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="validaciones.js"></script>
+  <script src="importar-exportar.js"></script>
+  <script src="formulario.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

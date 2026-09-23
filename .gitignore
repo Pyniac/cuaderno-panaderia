@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+package-lock.json
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Cosas personales
+.env
+.env.local

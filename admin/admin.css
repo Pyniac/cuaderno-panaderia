@@ -1,0 +1,686 @@
+:root {
+  --papel: #f5ecd7;
+  --papel-oscuro: #e8dcc0;
+  --texto: #3a2a1a;
+  --acento: #8b5a2b;
+  --acento-claro: #b8895a;
+  --peligro: #a03020;
+  --exito: #4a6b3a;
+  --borde: #c9b896;
+  --sombra: rgba(58, 42, 26, 0.15);
+  --fuente-titulo: Georgia, 'Times New Roman', serif;
+  --fuente-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--papel);
+  color: var(--texto);
+  font-family: var(--fuente-ui);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.oculto { display: none !important; }
+
+/* Bloqueo */
+.bloqueo {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.bloqueo-caja {
+  background: var(--papel-oscuro);
+  border: 2px solid var(--acento);
+  padding: 2rem;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 6px 6px 0 var(--sombra);
+}
+.bloqueo-caja h1 {
+  font-family: var(--fuente-titulo);
+  margin-top: 0;
+}
+
+/* App */
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 6rem;
+}
+
+.cabecera {
+  border-bottom: 2px solid var(--acento);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+.cabecera h1 {
+  font-family: var(--fuente-titulo);
+  margin: 0;
+  font-size: 1.6rem;
+}
+.subtitulo {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--acento);
+}
+.estado {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--papel-oscuro);
+  border: 1px solid var(--borde);
+  display: inline-block;
+}
+.estado.cambios { background: #f5d99a; }
+.estado.ok { background: #d4e4c8; }
+
+/* Barra de acciones */
+.barra-acciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.btn {
+  font-family: var(--fuente-ui);
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  background: var(--papel-oscuro);
+  color: var(--texto);
+  border: 1px solid var(--acento);
+  cursor: pointer;
+  min-height: 44px;
+}
+.btn:hover { background: var(--acento-claro); color: #fff; }
+.btn-primario {
+  background: var(--acento);
+  color: #fff;
+}
+.btn-primario:hover { background: var(--texto); }
+.btn-peligro { border-color: var(--peligro); color: var(--peligro); }
+.btn-peligro:hover { background: var(--peligro); color: #fff; }
+
+/* Filtros */
+.filtros {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.filtros input, .filtros select {
+  font-family: var(--fuente-ui);
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 44px;
+}
+.filtros input { flex: 1; min-width: 200px; }
+
+/* Tabla */
+.lista-recetas {
+  background: #fff;
+  border: 1px solid var(--borde);
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+thead {
+  background: var(--papel-oscuro);
+}
+th, td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+}
+th {
+  font-family: var(--fuente-titulo);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover { background: var(--acento-claro); color: #fff; }
+tbody tr:hover { background: #faf5e8; }
+.vacio {
+  text-align: center;
+  padding: 2rem;
+  color: var(--acento);
+  font-style: italic;
+}
+.acciones-fila {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.acciones-fila button {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  min-height: 36px;
+}
+
+/* Botón flotante */
+.btn-flotante {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--acento);
+  color: #fff;
+  border: 2px solid var(--texto);
+  padding: 0.9rem 1.2rem;
+  font-size: 1rem;
+  font-family: var(--fuente-ui);
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--sombra);
+  min-height: 48px;
+}
+.btn-flotante:hover { background: var(--texto); }
+
+/* Pie */
+.pie {
+  margin-top: 2rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--borde);
+  font-size: 0.85rem;
+  color: var(--acento);
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #app { padding: 0.75rem; }
+  .cabecera h1 { font-size: 1.3rem; }
+  th, td { padding: 0.5rem; font-size: 0.85rem; }
+  .filtros input, .filtros select { width: 100%; }
+  .btn { width: 100%; }
+  .barra-acciones { flex-direction: column; }
+  .btn-flotante { right: 1rem; bottom: 1rem; }
+}
+/* ============================================
+   FORMULARIO
+   ============================================ */
+
+#vista-formulario {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#vista-formulario .cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+#vista-formulario .cabecera h1 {
+  flex: 1;
+  min-width: 200px;
+}
+#btn-volver {
+  background: var(--papel-oscuro);
+}
+
+.seccion {
+  border: 1px solid var(--borde);
+  background: #fff;
+  padding: 1rem 1.25rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.seccion legend {
+  font-family: var(--fuente-titulo);
+  font-size: 1.05rem;
+  padding: 0 0.5rem;
+  color: var(--acento);
+}
+
+.campo {
+  margin-bottom: 0.85rem;
+}
+.campo label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: var(--texto);
+}
+.campo input[type="text"],
+.campo input[type="number"],
+.campo select,
+.campo textarea {
+  width: 100%;
+  font-family: var(--fuente-ui);
+  font-size: 0.95rem;
+  padding: 0.55rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  color: var(--texto);
+  min-height: 44px;
+}
+.campo textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: 2px solid var(--acento-claro);
+  outline-offset: -1px;
+}
+.campo .ayuda {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--acento);
+  margin-top: 0.15rem;
+}
+
+.campo-fila {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.campo-fila > .campo {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Ingredientes */
+.resumen-harina {
+  background: var(--papel-oscuro);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  border-left: 4px solid var(--acento);
+}
+.tabla-scroll {
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+.tabla-ingredientes {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+}
+.tabla-ingredientes th,
+.tabla-ingredientes td {
+  padding: 0.35rem;
+  border-bottom: 1px solid var(--borde);
+  vertical-align: middle;
+}
+.tabla-ingredientes th {
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: default;
+  background: var(--papel-oscuro);
+}
+.tabla-ingredientes input[type="text"],
+.tabla-ingredientes input[type="number"],
+.tabla-ingredientes select {
+  width: 100%;
+  font-family: var(--fuente-ui);
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 40px;
+}
+.tabla-ingredientes input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--acento);
+}
+.tabla-ingredientes .btn-eliminar-fila {
+  background: transparent;
+  border: 1px solid var(--peligro);
+  color: var(--peligro);
+  font-size: 0.9rem;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  min-height: 40px;
+}
+.tabla-ingredientes .btn-eliminar-fila:hover {
+  background: var(--peligro);
+  color: #fff;
+}
+
+/* Etapas */
+.etapa-item {
+  border: 1px solid var(--borde);
+  background: var(--papel);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+.etapa-item .etapa-acciones {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+.etapa-item .etapa-acciones button {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  min-height: 36px;
+}
+.etapa-item .btn-mover {
+  background: var(--papel-oscuro);
+}
+
+/* Listas simples (tips, bpm) */
+.fila-lista {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: flex-start;
+}
+.fila-lista textarea,
+.fila-lista input {
+  flex: 1;
+  font-family: var(--fuente-ui);
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 44px;
+}
+.fila-lista button {
+  background: transparent;
+  border: 1px solid var(--peligro);
+  color: var(--peligro);
+  font-size: 0.9rem;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+.fila-lista button:hover {
+  background: var(--peligro);
+  color: #fff;
+}
+
+/* Acciones del formulario */
+.acciones-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+  border-top: 2px solid var(--acento);
+  margin-top: 1rem;
+}
+.acciones-form .btn {
+  flex: 1;
+  min-width: 140px;
+}
+.acciones-form #btn-eliminar {
+  margin-left: auto;
+  flex: 0 1 auto;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .acciones-form { flex-direction: column; }
+  .acciones-form #btn-eliminar { margin-left: 0; }
+  .campo-fila { flex-direction: column; gap: 0; }
+}
+/* ============================================
+   ETAPA 2 — Ajustes del formulario
+   ============================================ */
+
+.campo-icono {
+  flex: 0 0 100px !important;
+  min-width: 100px !important;
+}
+.campo-icono input {
+  text-align: center;
+  font-size: 1.4rem;
+  padding: 0.3rem;
+}
+
+.aviso-etapas {
+  background: #fff8dc;
+  border-left: 4px solid var(--acento-claro);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--texto);
+  font-style: italic;
+}
+/* ============================================
+   ETAPA 3 — Grupos de ingredientes y etapas
+   ============================================ */
+
+/* Grupos de ingredientes */
+.grupo-item {
+  border: 2px solid var(--borde);
+  background: #fff;
+  margin-bottom: 1rem;
+}
+.grupo-cabecera {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: var(--papel-oscuro);
+  border-bottom: 1px solid var(--borde);
+}
+.grupo-cabecera input {
+  flex: 1;
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  padding: 0.45rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 40px;
+}
+.grupo-cabecera .btn-eliminar-grupo {
+  background: transparent;
+  border: 1px solid var(--peligro);
+  color: var(--peligro);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  min-height: 40px;
+}
+.grupo-cabecera .btn-eliminar-grupo:hover {
+  background: var(--peligro);
+  color: #fff;
+}
+.grupo-cuerpo {
+  padding: 0.5rem;
+}
+.grupo-cuerpo .tabla-scroll {
+  margin-bottom: 0.5rem;
+}
+
+/* Etapas */
+.etapa-item {
+  border: 1px solid var(--borde);
+  background: var(--papel);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.etapa-item .etapa-cabecera {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.etapa-item .etapa-cabecera .num-etapa {
+  font-family: var(--fuente-titulo);
+  font-size: 1.3rem;
+  color: var(--acento);
+  min-width: 2rem;
+  text-align: center;
+}
+.etapa-item .etapa-cabecera input {
+  flex: 1;
+  font-family: var(--fuente-titulo);
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 40px;
+}
+.etapa-item .etapa-acciones {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.etapa-item .etapa-acciones button {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.6rem;
+  min-height: 36px;
+}
+.etapa-item .btn-mover {
+  background: var(--papel-oscuro);
+}
+
+@media (max-width: 600px) {
+  .grupo-cabecera { flex-wrap: wrap; }
+  .etapa-item .etapa-cabecera { flex-wrap: wrap; }
+}
+/* ============================================
+   ETAPA 4 — BPM y consideraciones
+   ============================================ */
+
+/* BPM */
+.bpm-item {
+  border: 1px solid var(--borde);
+  background: var(--papel);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.bpm-item .bpm-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.bpm-item .bpm-cabecera .num-bpm {
+  font-family: var(--fuente-titulo);
+  color: var(--acento);
+  font-size: 1rem;
+}
+.bpm-item .bpm-cabecera button {
+  background: transparent;
+  border: 1px solid var(--peligro);
+  color: var(--peligro);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  min-height: 36px;
+}
+.bpm-item .bpm-cabecera button:hover {
+  background: var(--peligro);
+  color: #fff;
+}
+.bpm-item .campo-fila {
+  margin-bottom: 0.5rem;
+}
+.bpm-item .campo label {
+  font-size: 0.8rem;
+}
+
+/* Consideraciones */
+.consideracion-item {
+  border: 1px solid var(--borde);
+  background: var(--papel);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.consideracion-item.tipo-ok { border-left: 4px solid var(--exito); }
+.consideracion-item.tipo-info { border-left: 4px solid var(--acento-claro); }
+.consideracion-item.tipo-warn { border-left: 4px solid var(--peligro); }
+
+.consideracion-item .cons-cabecera {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.consideracion-item .cons-cabecera select {
+  font-family: var(--fuente-ui);
+  font-size: 0.85rem;
+  padding: 0.4rem;
+  border: 1px solid var(--borde);
+  background: #fff;
+  min-height: 40px;
+}
+.consideracion-item .cons-cabecera button {
+  background: transparent;
+  border: 1px solid var(--peligro);
+  color: var(--peligro);
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  min-height: 40px;
+  margin-left: auto;
+}
+.consideracion-item .cons-cabecera button:hover {
+  background: var(--peligro);
+  color: #fff;
+}
+.consideracion-item .campo label {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .bpm-item .campo-fila { flex-direction: column; gap: 0; }
+  .consideracion-item .cons-cabecera { flex-wrap: wrap; }
+}
+/* ============================================
+   ETAPA 5 — Referencias cruzadas y metadata
+   ============================================ */
+
+.subseccion {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--borde);
+}
+.subseccion:last-of-type {
+  border-bottom: none;
+}
+.sub-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 0.95rem;
+  color: var(--acento);
+  margin: 0 0 0.5rem;
+  font-weight: normal;
+}
+/* ============================================
+   EXPORTAR — diferenciar el botón principal
+   ============================================ */
+
+#btn-exportar {
+  border-color: var(--exito);
+  color: var(--exito);
+}
+#btn-exportar:hover {
+  background: var(--exito);
+  color: #fff;
+}
+    /* Selector de tags — estilos explícitos */
+    #tagSelect {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: #fffcf7;
+      border: 1.5px solid #b89b7a;
+      border-radius: 2px;
+      color: #2c2418;
+      min-width: 200px;
+      cursor: pointer;
+    }
+    #tagSelect:focus {
+      outline: 2px solid #b8956e;
+      outline-offset: 1px;
+    }
+    #tagSelect:disabled {
+      background: #f0ebe0;
+      color: #b0a08c;
+      cursor: not-allowed;
+    }

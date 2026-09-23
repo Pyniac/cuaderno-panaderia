@@ -1,0 +1,9 @@
+cuaderno-panaderia/
+└── admin/
+    ├── index.html
+    ├── admin.css
+    ├── admin.js
+    ├── formulario.js      ← placeholder por ahora
+    ├── validaciones.js    ← placeholder por ahora
+    ├── importar-exportar.js ← placeholder por ahora
+    └── storage.js

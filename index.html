@@ -173,6 +173,15 @@
       outline-offset: 1px;
     }
 
+    .field input[type="search"]::-webkit-search-cancel-button {
+      cursor: pointer;
+    }
+
+    .field input[type="search"]::placeholder {
+      color: #b0a08c;
+      font-style: italic;
+    }
+
     .btn {
       font-family: 'Georgia', 'Times New Roman', serif;
       font-size: 1rem;
@@ -698,12 +707,25 @@
   </div>
 
   <!-- ===== PANEL DE CONTROL ===== -->
-  <div class="control-panel no-print">
+    <div class="control-panel no-print">
+    <div class="field">
+      <label for="busquedaInput">Buscar</label>
+      <input type="search" id="busquedaInput" placeholder="Nombre, ingrediente, tag..." disabled>
+    </div>
+    <div class="field">
+      <label for="tagSelect">Filtrar por tag</label>
+      <select id="tagSelect" disabled>
+        <option value="">— Todos los tags —</option>
+      </select>
+    </div>
     <div class="field">
       <label for="recetaSelect">Elegir receta</label>
       <select id="recetaSelect" disabled>
         <option value="">— Cargando —</option>
       </select>
+    </div>
+    <div class="field" style="align-self: center;">
+      <span id="resultadosCount" style="font-size:0.85rem; color:#6b4f33; font-style:italic;"></span>
     </div>
     <div class="field">
       <label for="fechaInput">Fecha de inicio</label>
@@ -739,7 +761,11 @@
     referencias: {},
     config: {},
     cargado: false,
-    usandoFallback: false
+    usandoFallback: false,
+    filtros: {
+      busqueda: '',
+      tag: ''
+    }
   };
 
   // ============================================================
@@ -867,29 +893,128 @@
     document.getElementById('statusCount').textContent = APP.recetas.length + ' recetas';
     document.getElementById('statusVersion').textContent = APP.config.version_db || '—';
 
+    // Habilitar los controles
+    document.getElementById('busquedaInput').disabled = false;
+    document.getElementById('tagSelect').disabled = false;
+    document.getElementById('recetaSelect').disabled = false;
+    document.getElementById('btnGenerar').disabled = false;
+
+    poblarSelectTags();
+    refrescarSelectRecetas();
+  }
+
+  // ----- Filtros -----
+  function obtenerTagsDisponibles() {
+    const tags = new Set();
+    if (!Array.isArray(APP.recetas)) return [];
+    APP.recetas.forEach(r => {
+      if (!r || !r.metadata) return;
+      const t = r.metadata.tags;
+      if (Array.isArray(t)) {
+        t.forEach(tag => {
+          if (tag && typeof tag === 'string' && tag.trim()) {
+            tags.add(tag.trim());
+          }
+        });
+      }
+    });
+    return [...tags].sort((a, b) => a.localeCompare(b));
+  }
+
+  function poblarSelectTags() {
+    const select = document.getElementById('tagSelect');
+    if (!select) return;
+    const valorActual = select.value;
+    const tags = obtenerTagsDisponibles();
+    select.innerHTML = '<option value="">— Todos los tags —</option>';
+    tags.forEach(tag => {
+      const opt = document.createElement('option');
+      opt.value = tag;
+      opt.textContent = tag;
+      select.appendChild(opt);
+    });
+    select.value = valorActual;
+    console.log('[tags] disponibles:', tags.length, tags);
+  }
+
+  function recetasFiltradas() {
+    const b = (APP.filtros.busqueda || '').toLowerCase().trim();
+    const tag = APP.filtros.tag;
+
+    return APP.recetas.filter(r => {
+      // Filtro por tag
+      if (tag) {
+        const tags = (r.metadata && r.metadata.tags) || [];
+        if (!tags.includes(tag)) return false;
+      }
+      // Filtro por búsqueda
+      if (b) {
+        const id = (r.id || '').toLowerCase();
+        const nombre = (r.nombre || '').toLowerCase();
+        const descripcion = (r.descripcion || '').toLowerCase();
+        const tags = ((r.metadata && r.metadata.tags) || []).join(' ').toLowerCase();
+
+        // Ingredientes (nombres)
+        let ingredientesTexto = '';
+        if (r.ingredientes && Array.isArray(r.ingredientes.grupos)) {
+          ingredientesTexto = r.ingredientes.grupos
+            .flatMap(g => (g.items || []).map(i => i.nombre || ''))
+            .join(' ')
+            .toLowerCase();
+        }
+
+        const coincide = id.includes(b)
+          || nombre.includes(b)
+          || descripcion.includes(b)
+          || tags.includes(b)
+          || ingredientesTexto.includes(b);
+
+        if (!coincide) return false;
+      }
+      return true;
+    });
+  }
+
+  function refrescarSelectRecetas() {
     const select = document.getElementById('recetaSelect');
+    const valorActual = select.value;
     select.innerHTML = '<option value="">— Seleccionar —</option>';
 
-    // Agrupar por categoría
-    const cats = Object.values(APP.categorias).sort((a, b) => (a.orden || 99) - (b.orden || 99));
-    cats.forEach(cat => {
-      const recetasCat = APP.recetas.filter(r => r.categoria === cat.id && r.estado !== 'deprecada');
-      if (recetasCat.length === 0) return;
+    const recetasFilt = recetasFiltradas();
 
-      const group = document.createElement('optgroup');
-      group.label = `${cat.icono} ${cat.nombre}`;
-      recetasCat.forEach(r => {
-        const option = document.createElement('option');
-        option.value = r.id;
-        const marca = r.estado === 'borrador' ? ' (borrador)' : '';
-        option.textContent = `${r.icono} ${r.nombre}${marca}`;
-        group.appendChild(option);
+    if (recetasFilt.length === 0) {
+      select.innerHTML = '<option value="">— Sin resultados —</option>';
+    } else {
+      // Agrupar por categoría
+      const cats = Object.values(APP.categorias).sort((a, b) => (a.orden || 99) - (b.orden || 99));
+      cats.forEach(cat => {
+        const recetasCat = recetasFilt.filter(r => r.categoria === cat.id && r.estado !== 'deprecada');
+        if (recetasCat.length === 0) return;
+
+        const group = document.createElement('optgroup');
+        group.label = `${cat.icono} ${cat.nombre}`;
+        recetasCat.forEach(r => {
+          const option = document.createElement('option');
+          option.value = r.id;
+          const marca = r.estado === 'borrador' ? ' (borrador)' : '';
+          option.textContent = `${r.icono} ${r.nombre}${marca}`;
+          group.appendChild(option);
+        });
+        select.appendChild(group);
       });
-      select.appendChild(group);
-    });
 
-    select.disabled = false;
-    document.getElementById('btnGenerar').disabled = false;
+      // Restaurar selección si sigue existiendo
+      if (valorActual && recetasFilt.some(r => r.id === valorActual)) {
+        select.value = valorActual;
+      }
+    }
+
+    // Contador de resultados
+    const contador = document.getElementById('resultadosCount');
+    if (contador) {
+      const total = recetasFilt.length;
+      contador.textContent = total === 1 ? '1 receta' : total + ' recetas';
+    }
   }
 
   function mostrarMensaje(tipo, titulo, texto) {
@@ -1257,7 +1382,19 @@
 
     // Cargar base
     await cargarBase();
+    // Eventos de filtros
+    const busquedaInput = document.getElementById('busquedaInput');
+    const tagSelect = document.getElementById('tagSelect');
 
+    busquedaInput.addEventListener('input', () => {
+      APP.filtros.busqueda = busquedaInput.value;
+      refrescarSelectRecetas();
+    });
+
+    tagSelect.addEventListener('change', () => {
+      APP.filtros.tag = tagSelect.value;
+      refrescarSelectRecetas();
+    });
     // Generar
     btn.addEventListener('click', () => {
       const recetaKey = select.value;
@@ -1279,6 +1416,13 @@
       limpiarMensajes();
       document.getElementById('recipeOutput').style.display = 'none';
       document.getElementById('printArea').style.display = 'none';
+      // Resetear filtros
+      APP.filtros.busqueda = '';
+      APP.filtros.tag = '';
+      const bi = document.getElementById('busquedaInput');
+      const ts = document.getElementById('tagSelect');
+      if (bi) bi.value = '';
+      if (ts) ts.value = '';
       await cargarBase();
     });
   });

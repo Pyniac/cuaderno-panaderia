@@ -5,7 +5,7 @@
    - JSON de datos: network-first (para que se actualicen al recargar)
    ============================================================ */
 
-const CACHE_NAME = 'cuaderno-pan-v1.0.0';
+const CACHE_NAME = 'cuaderno-pan-v2.0.0';
 const CACHE_URLS = [
   './',
   './index.html',

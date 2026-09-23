@@ -1,0 +1,23 @@
+Resumen de comandos (copiar y pegar)
+
+Para tenerlo a mano, este es el flujo completo desde cero:
+
+# 1. Limpiar repo local
+cd ruta/a/cuaderno-panaderia
+rm -rf .git
+
+# 2. Verificar SSH
+ssh -T git@github.com
+
+# 3. Inicializar repo local
+git init
+git branch -M main
+git add .
+git commit -m "Versión inicial"
+
+# 4. Conectar por SSH
+git remote add origin git@github.com:Pyniac/cuaderno-panaderia.git
+git remote -v
+
+# 5. Push
+git push -u origin main
