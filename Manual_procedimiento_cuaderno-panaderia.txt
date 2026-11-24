@@ -1,0 +1,224 @@
+📁 cuaderno-panaderia/
+├── 📄 index.html          (la app)
+├── 📁 data/
+│   ├── 📄 recetas.json    (base de datos completa)
+│   ├── 📄 categorias.json (categorías y metadatos)
+│   └── 📄 referencias.json (tablas de consulta)
+├── 📁 assets/
+│   ├── 🖼 iconos/
+│   └── 🎨 estilos/
+└── 📄 README.md           (guía de actualización)
+
+# 📘 Manual de Procedimientos, Mantenimiento y Solución de Problemas  
+## Cuaderno de Panadería Años 40 — PWA
+
+> Documento complementario al `CONTEXTO.md`.  
+> Sirve como referencia operativa para mantener, actualizar y resolver problemas del proyecto sin depender de memoria ni de chats anteriores.
+
+---
+
+## 1. 🧭 Visión general del sistema
+
+| Componente | Descripción |
+|---|---|
+| **Tipo** | PWA (Progressive Web App) |
+| **Frontend** | HTML + CSS + JS vanilla (sin frameworks) |
+| **Datos** | Archivos JSON (recetas, categorías, tags) |
+| **Admin** | Panel en `/admin/` para CRUD de recetas |
+| **Hosting** | GitHub Pages |
+| **Repo** | https://github.com/Pyniac/cuaderno-panaderia |
+| **App pública** | https://pyniac.github.io/cuaderno-panaderia/ |
+| **Offline** | Service Worker + caché |
+| **Instalable** | Sí, vía manifest + SW |
+
+---
+
+## 2. 🛠️ Manual de procedimientos
+
+### 2.1 Agregar una receta nueva
+
+**Opción A — Desde el panel admin (recomendado)**
+1. Ir a `/admin/`.
+2. Clic en **"Nueva receta"**.
+3. Completar campos: nombre, ID, categoría, tags, ingredientes, pasos, tiempos, consideraciones.
+4. Guardar → se actualiza el JSON correspondiente.
+5. Verificar en la app pública que aparezca.
+
+**Opción B — Editando JSON a mano**
+1. Abrir el archivo de recetas (`/data/recetas.json` o similar).
+2. Copiar una receta existente como plantilla.
+3. Respetar la estructura de campos (ver §2.4).
+4. Guardar y commitear.
+5. Esperar deploy de GitHub Pages (~1 min).
+
+### 2.2 Editar una receta existente
+- Admin → buscar receta → editar → guardar.
+- Si se cambia el **ID**, verificar que no haya referencias rotas en otras recetas o en el calendario.
+
+### 2.3 Duplicar una receta
+- Admin → botón **"Duplicar"** → cambiar nombre e ID → guardar.
+- Útil para variantes (ej: "Pan francés" → "Pan francés integral").
+
+### 2.4 Estructura mínima de una receta (JSON)
+```json
+{
+  "id": "pan-frances",
+  "nombre": "Pan Francés",
+  "categoria": "Panificados",
+  "tags": ["clásico", "diario"],
+  "multiplicador": 1,
+  "ingredientes": [
+    { "nombre": "Harina 000", "cantidad": 1000, "unidad": "g", "porcentaje": 100 }
+  ],
+  "pasos": [
+    { "etapa": "Amasado", "duracion": 15, "temperatura": "25°C", "notas": "" }
+  ],
+  "consideraciones": "...",
+  "bpm": "...",
+  "tips": "..."
+}
+```
+
+### 2.5 Publicar cambios
+1. `git add .`
+2. `git commit -m "descripción clara"`
+3. `git push origin main`
+4. GitHub Pages despliega automáticamente.
+5. Si no se ve el cambio: **Ctrl+Shift+R** (hard refresh) o borrar caché del SW.
+
+### 2.6 Actualizar el Service Worker (versión de caché)
+- Cada vez que se modifiquen archivos estáticos (HTML, CSS, JS, JSON), **incrementar la versión del caché** en `sw.js`:
+  ```js
+  const CACHE_VERSION = 'v1.0.3'; // subir número
+  ```
+- Sin esto, los usuarios pueden seguir viendo la versión vieja.
+
+### 2.7 Backup
+- El repo Git **es** el backup.
+- Recomendado: exportar JSON periódicamente desde el admin (si tiene función de exportar).
+- Guardar copia en Drive/Disco externo cada vez que se agreguen muchas recetas.
+
+---
+
+## 3. 🔧 Mantenimiento
+
+### 3.1 Rutinario (mensual)
+- [ ] Verificar que la app cargue en móvil y desktop.
+- [ ] Probar instalación como PWA.
+- [ ] Probar modo offline (activar avión, recargar).
+- [ ] Revisar consola del navegador por errores.
+- [ ] Verificar que el admin guarde correctamente.
+
+### 3.2 Trimestral
+- [ ] Actualizar dependencias (si hubiera).
+- [ ] Revisar Lighthouse (Performance, PWA, Accesibilidad).
+- [ ] Verificar que GitHub Pages siga activo.
+- [ ] Revisar que los enlaces internos no estén rotos.
+
+### 3.3 Anual
+- [ ] Revisar diseño vs. inspiración años 40 (coherencia visual).
+- [ ] Evaluar si conviene migrar a framework (solo si el proyecto crece mucho).
+- [ ] Renovar backup externo.
+
+---
+
+## 4. 🚨 Posibles fallos y soluciones
+
+| # | Síntoma | Causa probable | Solución |
+|---|---|---|---|
+| 1 | La app no carga en GitHub Pages | Deploy fallido o rama incorrecta | Verificar en repo → Settings → Pages que esté en `main` /root |
+| 2 | Cambios no se ven | Caché del SW | Subir `CACHE_VERSION` en `sw.js` y hard refresh |
+| 3 | Receta no aparece | JSON mal formado o ID duplicado | Validar JSON en jsonlint.com |
+| 4 | Admin no guarda | Permisos o ruta incorrecta | Revisar consola; verificar que el JSON sea escribible (si usa backend) |
+| 5 | Búsqueda no encuentra | Tags mal escritos o índice desactualizado | Revisar campo `tags` y reconstruir índice si existe |
+| 6 | Multiplicador no recalcula | Error en JS de cálculo | Revisar función de escalado; verificar que `porcentaje` esté definido |
+| 7 | Calendario muestra horas erróneas | Zona horaria del navegador | Usar UTC internamente o fijar TZ Argentina |
+| 8 | Impresión sale cortada | CSS `@media print` incompleto | Revisar reglas print; probar en Chrome y Firefox |
+| 9 | PWA no se instala | Falta manifest o SW no registrado | Verificar `manifest.json` y registro en `index.html` |
+| 10 | Offline no funciona | SW no cachea JSON | Agregar rutas de datos al `CACHE_ASSETS` |
+| 11 | Iconos rotos | Rutas mal o archivos faltantes | Verificar `/icons/` y manifest |
+| 12 | App lenta | JSON muy grande o imágenes pesadas | Optimizar imágenes (WebP), dividir JSON por categoría |
+| 13 | Admin borra receta por error | Sin confirmación | Agregar modal de confirmación |
+| 14 | Duplicados de ID | Duplicar sin cambiar ID | Validar unicidad de ID en admin |
+| 15 | GitHub Pages 404 en rutas internas | Falta `.nojekyll` o rutas absolutas | Usar rutas relativas; agregar `.nojekyll` |
+
+---
+
+## 5. 🧪 Testing manual (checklist rápido)
+
+Antes de cada release o cambio importante:
+
+- [ ] Cargar app en Chrome desktop.
+- [ ] Cargar app en Safari iOS.
+- [ ] Cargar app en Chrome Android.
+- [ ] Buscar una receta por nombre.
+- [ ] Buscar por ingrediente.
+- [ ] Filtrar por tag.
+- [ ] Cambiar multiplicador a 0.5x, 1x, 10x.
+- [ ] Verificar porcentaje panadero.
+- [ ] Abrir calendario y verificar horas.
+- [ ] Imprimir una ficha.
+- [ ] Instalar como PWA.
+- [ ] Modo offline.
+- [ ] Admin: crear, editar, duplicar, borrar.
+
+---
+
+## 6. 🎨 Guía de estilo (para mantener coherencia)
+
+| Elemento | Valor |
+|---|---|
+| **Paleta** | Papel envejecido (#f4ecd8), tinta sepia (#3b2f2f), acentos rojo ladrillo |
+| **Tipografía** | Serif (ej: EB Garamond, Playfair Display) |
+| **Bordes** | Dobles, estilo cuaderno |
+| **Sombras** | Duras, offset, sin blur |
+| **Iconografía** | Línea, vintage |
+| **Tono** | Cercano, obrador, años 40 |
+
+**Regla de oro:** cualquier elemento nuevo debe parecer que fue impreso en un cuaderno de panadería de 1940.
+
+---
+
+## 7. 🔐 Seguridad y buenas prácticas
+
+- El admin **no tiene autenticación** (si es solo local o GitHub Pages estático).  
+  → Si se publica, considerar agregar login simple o mantenerlo solo en local.
+- No exponer claves API en el frontend.
+- Validar todo JSON antes de commitear.
+- No commitear archivos temporales ni backups pesados.
+- Usar `.gitignore` para `node_modules`, `.DS_Store`, etc.
+
+---
+
+## 8. 📈 Roadmap sugerido (ideas a futuro)
+
+| Prioridad | Mejora |
+|---|---|
+| Alta | Autenticación simple en admin |
+| Alta | Export/Import JSON desde admin |
+| Media | Modo "solo lectura" para compartir receta por link |
+| Media | Cálculo automático de temperatura del agua |
+| Media | Historial de versiones de recetas |
+| Baja | Multi-idioma (ES/EN) |
+| Baja | Integración con balanzas Bluetooth |
+| Baja | Modo "obrador" con pantalla siempre encendida |
+| Baja | Escalado por molde (área/volumen) |
+
+---
+
+## 9. 📞 Contacto y recursos
+
+- **Repo**: https://github.com/Pyniac/cuaderno-panaderia
+- **App**: https://pyniac.github.io/cuaderno-panaderia/
+- **Libro base**: "Panadería Gastón" — Claudio Olijavetzky
+- **Inspiración visual**: cuadernos de obrador argentinos, años 40
+
+---
+
+## 10. 🧾 Registro de cambios del manual
+
+| Fecha | Cambio | Autor |
+|---|---|---|
+| — | Creación inicial del manual | — |
+
+> **Nota final:** este manual debe actualizarse cada vez que se agregue una funcionalidad, se resuelva un bug importante o se cambie la estructura de datos. Pegarlo junto al `CONTEXTO.md` al inicio de cada chat nuevo.
